@@ -1,7 +1,7 @@
 <?php
 
 $EXTENSIONS_IMAGE = array('png', 'jpg', 'jpeg', 'bmp', 'gif');
-$EXTENSIONS_AUDIO = array('mp3', 'aac', 'flac');
+$EXTENSIONS_AUDIO = array('mp3', 'aac', 'flac', 'ogg');
 $EXTENSIONS_VIDEO = array('mp4', 'avi', 'mpeg', 'mpg', 'mkv', '3gp', 'wmv');
 
 define('TYPES_UNKNOWN', -1);
@@ -10,7 +10,7 @@ define('TYPES_DIR'    , 1);
 define('TYPES_IMAGE'  , 2);
 define('TYPES_VIDEO'  , 3);
 
-define('ACCESS_DIR', $_SERVER['DOCUMENT_ROOT'].$_SERVER['REQUEST_URI']);
+define('ACCESS_DIR', $_SERVER['DOCUMENT_ROOT'].rawurldecode($_SERVER['REQUEST_URI']));
 define('SCRIPT_DIR', dirname($_SERVER['SCRIPT_NAME']));
 
 $GLYPHICONS_CLASS = array(
@@ -29,6 +29,13 @@ $TYPES_CLASS = array(
     TYPES_VIDEO   => "types-video"
 );
 
+function human_filesize($file, $decimals = 2) {
+    $bytes = filesize($file);
+    $sz = 'BKMGTP';
+    $factor = floor((strlen($bytes) - 1) / 3);
+    return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . $sz[$factor];
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -39,7 +46,7 @@ $TYPES_CLASS = array(
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Index of <?php echo $_SERVER['REQUEST_URI']; ?></title>
+    <title>Index of <?php echo basename(rawurldecode($_SERVER['REQUEST_URI']))."/"; ?></title>
 
     <!-- Bootstrap core CSS -->
     <link href="<?php echo SCRIPT_DIR; ?>/css/bootstrap.min.css" rel="stylesheet">
@@ -65,13 +72,13 @@ $TYPES_CLASS = array(
         $prefix = "/";
         for($i=1; $i<$lc-2; $i++){
             $prefix = $prefix.$levels[$i]."/";
-            echo '<li><a href="'.$prefix.'">'.$levels[$i].'</a></li>';
+            echo '<li><a href="'.$prefix.'">'.rawurldecode($levels[$i]).'</a></li>';
         }
-        echo '<li class="active">'.$levels[$i].'</li>';
+        echo '<li class="active">'.rawurldecode($levels[$i]).'</li>';
         ?>
     </ol>
 
-    <div class="container" style="padding-top:50px">
+    <div class="container" style="padding-top:50px;padding-bottom:15px">
         <div class="row">
             <div class="list-unstyled">
             <?php
@@ -90,7 +97,7 @@ $TYPES_CLASS = array(
                     continue;
                 }
 
-                $url = $_SERVER['REQUEST_URI'].$fileName;
+                $url = $fileName;
                 echo '<a href="'.$url.'" class="list-group-item '.$TYPES_CLASS[TYPES_DIR].'">';
                 echo '<span class="'.$GLYPHICONS_CLASS[TYPES_DIR].'"></span>&nbsp;&nbsp;&nbsp;'.$fileName;
                 echo '</a>';
@@ -110,9 +117,11 @@ $TYPES_CLASS = array(
                 else if (in_array($extension, $EXTENSIONS_IMAGE))
                     $type = TYPES_IMAGE;
 
-                $url = $_SERVER['REQUEST_URI'].$fileName;
+                $url = rawurlencode($fileName);
                 echo '<a href="'.$url.'" class="list-group-item '.$TYPES_CLASS[$type].'">';
-                echo '<span class="'.$GLYPHICONS_CLASS[$type].'"></span>&nbsp;&nbsp;&nbsp;'.$fileName;
+                echo '<span class="'.$GLYPHICONS_CLASS[$type].'"></span>';
+                echo '<span class="pull-right">'.human_filesize($filePath).'</span>';
+                echo '&nbsp;&nbsp;'.$fileName;
                 echo '</a>';
             } ?>
             </div>
