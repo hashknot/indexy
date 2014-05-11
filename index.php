@@ -51,6 +51,7 @@ function human_filesize($file, $decimals = 2) {
     <!-- Bootstrap core CSS -->
     <link href="<?php echo SCRIPT_DIR; ?>/css/bootstrap.min.css" rel="stylesheet">
     <link href="<?php echo SCRIPT_DIR; ?>/css/swipebox.min.css" rel="stylesheet">
+    <link href="<?php echo SCRIPT_DIR; ?>/img/app-16x16.ico" rel="shortcut icon">
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
